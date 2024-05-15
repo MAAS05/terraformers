@@ -1,7 +1,7 @@
 version: 0.2
 phases:
   install:
-    runtime-veresions:
+    runtime-versions:
       terraform: 1.8.3
     commands:
       - echo "Installing Terraform"
@@ -14,7 +14,7 @@ phases:
   build:
     commands:
       - echo "Building infrastructure with Terraform"
-      - cd terraformers/
+      - ls -ltr
       - terraform init
       - terraform apply --auto-approve
   post_build:
