@@ -1,8 +1,8 @@
 version: 0.2
 phases:
   install:
-    runtime-versions:
-      terraform: 1.8.3
+#    runtime-versions:
+#      terraform: 1.8.3
     commands:
       - echo "Installing Terraform"
       - curl -o terraform.zip https://releases.hashicorp.com/terraform/1.8.3/terraform_1.8.3_linux_amd64.zip
