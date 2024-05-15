@@ -204,3 +204,25 @@ resource "aws_security_group" "service_security_group" {
 # Outputs:
 
 # other_project_bucket = "blep-20190110063357193700000001"
+
+resource "null_resource" "docker_packaging" {
+	
+	  provisioner "local-exec" {
+	    command = <<EOF
+	    aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 962804699607.dkr.ecr.us-west-2.amazonaws.com
+	    docker build -t terraformers-us-west-2 .
+	    docker tag terraformers-us-west-2:latest 962804699607.dkr.ecr.us-west-2.amazonaws.com/terraformers-us-west-2:latest
+	    docker push 962804699607.dkr.ecr.us-west-2.amazonaws.com/terraformers-us-west-2:latest
+	    EOF
+	  }
+	
+
+	  triggers = {
+	    "run_at" = timestamp()
+	  }
+	
+
+	  depends_on = [
+	    aws_ecr_repository.my_first_ecr_repo,
+	  ]
+}        
