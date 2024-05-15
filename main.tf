@@ -6,18 +6,26 @@ terraform {
     }
   }
   backend "s3" {
-    bucket = "terraformers-tf-state"
+    bucket = "terraformers2-tf-state"
     key    = "terraform.tfstate"
     region = "us-west-2"
   }
 }
+
 
 # Configure the AWS Provider
 provider "aws" {
     profile = "default"
     region="us-west-2"
 }
-    
+ 
+# declare a resource stanza so we can create something.
+resource "aws_s3_object" "user_student_alias_object" {
+  bucket  = "terraformers2-tf-state"
+  key     = "terraform.tfstate"
+  content = "This bucket is reserved for Terraformers"
+}
+
 # Providing a reference to our default VPC
 resource "aws_default_vpc" "default_vpc" {
 }
@@ -226,3 +234,5 @@ resource "null_resource" "docker_packaging" {
 	    aws_ecr_repository.my_first_ecr_repo,
 	  ]
 }        
+
+
