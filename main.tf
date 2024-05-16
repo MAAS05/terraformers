@@ -6,7 +6,7 @@ terraform {
     }
   }
   backend "s3" {
-    bucket = "terraformers2-tf-state"
+    bucket = "terraformers-tf-state"
     key    = "terraform.tfstate"
     region = "us-west-2"
   }
@@ -15,10 +15,10 @@ terraform {
 
 # Configure the AWS Provider
 provider "aws" {
-    profile = "default"
     region="us-west-2"
+    profile="default"
 }
- 
+
 # declare a resource stanza so we can create something.
 resource "aws_s3_object" "user_student_alias_object" {
   bucket  = "terraformers2-tf-state"
