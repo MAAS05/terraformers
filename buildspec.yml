@@ -15,6 +15,7 @@ phases:
     commands:
       - echo "Building infrastructure with Terraform"
       - ls -ltr
+      - aws sts get-caller-identity
       - terraform init
       - terraform apply --auto-approve
   post_build:
