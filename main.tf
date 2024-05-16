@@ -19,13 +19,6 @@ provider "aws" {
     profile="default"
 }
 
-# declare a resource stanza so we can create something.
-resource "aws_s3_object" "user_student_alias_object" {
-  bucket  = "terraformers2-tf-state"
-  key     = "terraform.tfstate"
-  content = "This bucket is reserved for Terraformers"
-}
-
 # Providing a reference to our default VPC
 resource "aws_default_vpc" "default_vpc" {
 }
