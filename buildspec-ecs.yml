@@ -1,0 +1,31 @@
+version: 0.2
+env:
+  secrets-manager:
+    ACCESS_KEY: "arn:aws:secretsmanager:us-west-2:962804699607:secret:terraformers-A5UZh2:access_key_id"
+    SECRET_KEY: "arn:aws:secretsmanager:us-west-2:962804699607:secret:terraformers-A5UZh2:secret_access_key"
+phases:
+  install:
+#    runtime-versions:
+#      terraform: 1.8.3
+    commands:
+      - echo "Installing Terraform"
+      - curl -o terraform.zip https://releases.hashicorp.com/terraform/1.8.3/terraform_1.8.3_linux_amd64.zip
+      - unzip terraform.zip
+      - chmod +x terraform
+      - mv terraform /usr/local/bin/
+  pre_build:
+    commands:
+  build:
+    commands:
+      - echo "Building infrastructure with Terraform"
+      - ls -ltr
+      - export AWS_ACCESS_KEY_ID=$ACCESS_KEY
+      - export AWS_SECRET_ACCESS_KEY=$SECRET_KEY
+      - export AWS_REGION="us-west-2"
+      - aws sts get-caller-identity
+      - terraform init
+      - terraform apply --auto-approve
+  post_build:
+    commands:
+      - echo Terraform complete `date`
+      

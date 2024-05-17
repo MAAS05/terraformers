@@ -1,31 +1,33 @@
 version: 0.2
-env:
-  secrets-manager:
-    ACCESS_KEY: "arn:aws:secretsmanager:us-west-2:962804699607:secret:terraformers-A5UZh2:access_key_id"
-    SECRET_KEY: "arn:aws:secretsmanager:us-west-2:962804699607:secret:terraformers-A5UZh2:secret_access_key"
 phases:
   install:
-#    runtime-versions:
-#      terraform: 1.8.3
     commands:
-      - echo "Installing Terraform"
-      - curl -o terraform.zip https://releases.hashicorp.com/terraform/1.8.3/terraform_1.8.3_linux_amd64.zip
-      - unzip terraform.zip
-      - chmod +x terraform
-      - mv terraform /usr/local/bin/
+      - echo Installing app dependencies...
+      - curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.28.8/2024-04-19/bin/linux/amd64/kubectl
+      - chmod +x ./kubectl
+      - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+      - echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+      - source ~/.bashrc
+      - echo 'Check kubectl version'
+      - kubectl version --short --client
   pre_build:
     commands:
+      - echo Logging into Amazon EKS...
+      - aws eks --region us-west-2 update-kubeconfig --name terraformers-eks
+      - echo check config
+      - kubectl config view --minify
+      - echo check kubectl access
+      - kubectl get svc
+      - echo logging in to AWS ECR...
+      - aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 962804699607.dkr.ecr.us-west-2.amazonaws.com
   build:
     commands:
-      - echo "Building infrastructure with Terraform"
-      - ls -ltr
-      - export AWS_ACCESS_KEY_ID=$ACCESS_KEY
-      - export AWS_SECRET_ACCESS_KEY=$SECRET_KEY
-      - export AWS_REGION="us-west-2"
-      - aws sts get-caller-identity
-      - terraform init
-      - terraform apply --auto-approve
+      - docker build -t terraformers .
   post_build:
     commands:
-      - echo Terraform complete `date`
-      
+      - docker tag terraformers:latest 962804699607.dkr.ecr.us-west-2.amazonaws.com/terraformers:latest
+      - docker push 962804699607.dkr.ecr.us-west-2.amazonaws.com/terraformers:latest
+      - kubectl apply -f deployment.yaml
+      - kubectl apply -f service.yaml
+      - kubectl rollout restart -f deployment.yaml
+      - kubectl get svc --all-namespaces

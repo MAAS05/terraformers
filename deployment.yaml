@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: terraformers-eks
+    app.kubernetes.io/instance: terraformers-eks-instance
+    app.kubernetes.io/version: '1.0.0'
+    app.kubernetes.io/managed-by: kubectl
+  name: terraformers-eks-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: terraformers-eks
+  template:
+    metadata:
+      labels:
+        app: terraformers-eks
+    spec:
+      containers:
+        - image: 962804699607.dkr.ecr.us-west-2.amazonaws.com/terraformers:latest
+          imagePullPolicy: Always
+          name: terraformers-react-app
+          ports:
+            - containerPort: 3000
